@@ -1,18 +1,16 @@
-# Core Gymnasium and RL dependencies (Python 3.12 compatible)
+# Production dependencies - minimal set for deployment
+# Core Gymnasium and RL dependencies
 gymnasium>=0.29.1
 numpy>=1.26.0
-matplotlib>=3.8.0
-seaborn>=0.13.0
 
-# ML and data processing
-scikit-learn>=1.3.0
+# ML and data processing - essential only
 pandas>=2.1.0
-torch>=2.1.0
+torch>=2.1.0,<2.3.0
 stable-baselines3>=2.1.0
 
 # Backend
 fastapi>=0.104.0
-uvicorn>=0.24.0
+uvicorn[standard]>=0.24.0
 pydantic>=2.5.0
 python-multipart>=0.0.6
 websockets>=11.0.3
@@ -20,11 +18,8 @@ websockets>=11.0.3
 # Utilities
 python-dotenv>=1.0.0
 structlog>=23.1.0
-rich>=13.5.2
 typer>=0.9.0
 
-# Development
-pytest>=7.4.2
-black>=23.7.0
-isort>=5.12.0
-mypy>=1.5.1
+# Required for stable-baselines3
+cloudpickle>=1.6.0
+tensorboard>=2.11.0

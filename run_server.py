@@ -6,10 +6,19 @@ Server startup script for Customer Support RL Environment
 import uvicorn
 import typer
 import sys
+import os
 from pathlib import Path
 
-# Add src to path
-sys.path.insert(0, str(Path(__file__).parent / "src"))
+# Add src to path - handle both local and deployed environments
+src_path = Path(__file__).parent / "src"
+if src_path.exists():
+    sys.path.insert(0, str(src_path))
+else:
+    # In deployed environment, src might be in different location
+    sys.path.insert(0, str(Path(__file__).parent))
+
+# Set PYTHONPATH environment variable
+os.environ["PYTHONPATH"] = ":".join(sys.path)
 
 app = typer.Typer(help="Customer Support RL Environment Server")
 

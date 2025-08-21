@@ -72,8 +72,7 @@ cd ..
 
 1. **Start the backend server**
 ```bash
-
-
+python run_server.py serve
 ```
 
 2. **Start the frontend (in a new terminal)**
