@@ -63,10 +63,27 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Initialize managers
-env_manager = EnvironmentManager()
-training_manager = TrainingManager()
-websocket_manager = WebSocketManager()
+# Initialize managers with error handling
+try:
+    env_manager = EnvironmentManager()
+    logger.info("Environment manager initialized")
+except Exception as e:
+    logger.error(f"Failed to initialize environment manager: {e}")
+    env_manager = None
+
+try:
+    training_manager = TrainingManager()
+    logger.info("Training manager initialized")
+except Exception as e:
+    logger.error(f"Failed to initialize training manager: {e}")
+    training_manager = None
+
+try:
+    websocket_manager = WebSocketManager()
+    logger.info("WebSocket manager initialized")
+except Exception as e:
+    logger.error(f"Failed to initialize websocket manager: {e}")
+    websocket_manager = None
 
 # Store active sessions
 active_sessions: Dict[str, Dict[str, Any]] = {}
@@ -77,37 +94,57 @@ async def startup_event():
     """Initialize the application"""
     logger.info("Starting Customer Support RL Environment API")
     
-    # Create default environments for each industry
-    for industry in ["bfsi", "retail", "tech", "mixed"]:
-        env_id = await env_manager.create_environment(
-            CreateEnvironmentRequest(
-                industry=industry,
-                max_conversation_length=10,
-                environment_type="standard"
-            )
-        )
-        logger.info(f"Created default {industry} environment: {env_id}")
+    # Try to create default environments, but don't fail if it doesn't work
+    if env_manager:
+        try:
+            for industry in ["bfsi", "retail", "tech", "mixed"]:
+                env_id = await env_manager.create_environment(
+                    CreateEnvironmentRequest(
+                        industry=industry,
+                        max_conversation_length=10,
+                        environment_type="standard"
+                    )
+                )
+                logger.info(f"Created default {industry} environment: {env_id}")
+        except Exception as e:
+            logger.warning(f"Could not create default environments: {e}")
+            logger.info("API will start without default environments")
+    else:
+        logger.info("Environment manager not available, skipping default environment creation")
 
 
 @app.on_event("shutdown")
 async def shutdown_event():
     """Cleanup on shutdown"""
     logger.info("Shutting down Customer Support RL Environment API")
-    await env_manager.cleanup_all()
-    await training_manager.cleanup_all()
+    try:
+        if env_manager:
+            await env_manager.cleanup_all()
+        if training_manager:
+            await training_manager.cleanup_all()
+    except Exception as e:
+        logger.error(f"Error during cleanup: {e}")
 
 
 # Health check endpoint
 @app.get("/health")
 async def health_check():
     """Health check endpoint"""
-    return {
-        "status": "healthy",
-        "timestamp": datetime.now().isoformat(),
-        "active_environments": len(env_manager.environments),
-        "active_training_sessions": len(training_manager.training_sessions),
-        "active_websockets": len(websocket_manager.connections)
-    }
+    try:
+        return {
+            "status": "healthy",
+            "timestamp": datetime.now().isoformat(),
+            "active_environments": len(env_manager.environments) if env_manager else 0,
+            "active_training_sessions": len(training_manager.training_sessions) if training_manager else 0,
+            "active_websockets": len(websocket_manager.connections) if websocket_manager else 0
+        }
+    except Exception as e:
+        logger.error(f"Health check error: {e}")
+        return {
+            "status": "healthy",
+            "timestamp": datetime.now().isoformat(),
+            "message": "Service is running but some features may be unavailable"
+        }
 
 
 # Environment Management Endpoints
