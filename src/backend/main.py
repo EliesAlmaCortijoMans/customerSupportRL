@@ -15,27 +15,49 @@ import threading
 import queue
 import time
 import logging
+import os
+from dotenv import load_dotenv
 
 from backend.models import *
 from backend.environment_manager import EnvironmentManager
 from backend.training_manager import TrainingManager
 from backend.websocket_manager import WebSocketManager
 
+# Load environment variables
+load_dotenv()
+
 # Setup logging
-logging.basicConfig(level=logging.INFO)
+log_level = os.getenv("LOG_LEVEL", "INFO").upper()
+logging.basicConfig(level=getattr(logging, log_level))
 logger = logging.getLogger(__name__)
+
+# Environment configuration
+ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
+DEBUG = os.getenv("DEBUG", "true").lower() == "true"
+
+# CORS origins
+if ENVIRONMENT == "production":
+    allowed_origins = json.loads(os.getenv("ALLOWED_ORIGINS", '["*"]'))
+else:
+    allowed_origins = [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:3001",
+        "*"
+    ]
 
 # Create FastAPI app
 app = FastAPI(
     title="Customer Support RL Environment API",
     description="API for training and interacting with customer support reinforcement learning environments",
-    version="1.0.0"
+    version="1.0.0",
+    debug=DEBUG
 )
 
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, specify actual origins
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
