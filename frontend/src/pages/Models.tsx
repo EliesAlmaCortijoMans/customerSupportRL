@@ -6,7 +6,6 @@ import {
   Typography,
   Grid,
   Chip,
-  Button,
   Table,
   TableBody,
   TableCell,
@@ -29,7 +28,7 @@ import { format } from 'date-fns';
 import { modelApi } from '../services/api';
 
 const Models: React.FC = () => {
-  const { data: models, isLoading } = useQuery({
+  const { data: models } = useQuery({
     queryKey: ['models'],
     queryFn: async () => {
       const response = await modelApi.list();

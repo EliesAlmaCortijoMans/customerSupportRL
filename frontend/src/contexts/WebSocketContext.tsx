@@ -119,7 +119,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
     };
 
     const handleProgressUpdate = (data: any) => {
-      const { resource_type, resource_id, progress, details } = data;
+      const { resource_type, resource_id, progress } = data;
       console.log(`Progress update for ${resource_type}:${resource_id}: ${(progress * 100).toFixed(1)}%`);
       
       // Could show progress notifications for long-running operations

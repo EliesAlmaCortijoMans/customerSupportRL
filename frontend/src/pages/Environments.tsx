@@ -33,10 +33,8 @@ import {
 import {
   Add as AddIcon,
   Delete as DeleteIcon,
-  PlayArrow as PlayIcon,
   Refresh as RefreshIcon,
   Visibility as VisibilityIcon,
-  Settings as SettingsIcon,
 } from '@mui/icons-material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';

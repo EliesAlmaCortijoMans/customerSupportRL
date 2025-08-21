@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Card,
@@ -13,9 +13,6 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
-  IconButton,
-  Tooltip,
   Alert,
   Button,
 } from '@mui/material';
@@ -25,8 +22,6 @@ import {
   Speed as SpeedIcon,
   Star as StarIcon,
   Psychology as PsychologyIcon,
-  PlayArrow as PlayIcon,
-  Stop as StopIcon,
 } from '@mui/icons-material';
 import { useQuery } from '@tanstack/react-query';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
