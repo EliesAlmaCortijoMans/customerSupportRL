@@ -176,7 +176,8 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({ children }
     };
 
     // Create WebSocket connection
-    const wsUrl = `ws://localhost:8000/ws/${clientId}`;
+    const apiBaseUrl = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+    const wsUrl = apiBaseUrl.replace(/^http/, 'ws') + `/ws/${clientId}`;
     const newSocket = new WebSocket(wsUrl);
 
     // Connection event handlers
